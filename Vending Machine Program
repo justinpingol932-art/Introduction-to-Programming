@@ -1,0 +1,95 @@
+# Vending Machine Program
+# Author: Justin Izeah R. Pingol
+
+# Dictionary storing vending machine items
+# Each item has a name, price, category, and stock level
+items = {
+    "A1": {"name": "Cola", "price": 1.50, "category": "Drinks", "stock": 5},
+    "A2": {"name": "Water", "price": 1.00, "category": "Drinks", "stock": 5},
+    "A3": {"name": "Coffee", "price": 2.00, "category": "Hot Drinks", "stock": 5},
+    "A4": {"name": "Hot Milk", "price": 1.80, "category": "Hot Drinks", "stock": 5},
+    "A5": {"name": "Hot Water", "price": 0.80, "category": "Hot Drinks", "stock": 5}, 
+    "B1": {"name": "Chocolate Bar", "price": 1.20, "category": "Snacks", "stock": 5},
+    "B2": {"name": "Chips", "price": 1.30, "category": "Snacks", "stock": 5},
+    "B3": {"name": "Biscuits", "price": 1.10, "category": "Snacks", "stock": 5},
+}
+
+def display_menu():
+    """Displays the vending machine menu grouped by category"""
+    print("\n--- VENDING MACHINE MENU ---")
+    categories = {}
+
+    # Group items by category
+    for code, item in items.items():
+        categories.setdefault(item["category"], []).append((code, item))
+
+    # Display items by category
+    for category, products in categories.items():
+        print(f"\n{category}:")
+        for code, item in products:
+            print(f"  {code} - {item['name']} (£{item['price']}) [Stock: {item['stock']}]")
+
+def suggest_item(selected_code):
+    """Suggests an additional item based on selection"""
+    if items[selected_code]["name"] in ["Coffee", "Hot Milk", "Hot Water"]:
+        print("Suggestion: This goes well with Biscuits!")
+
+def process_purchase(code, money):
+    """Processes the purchase and returns change"""
+    item = items[code]
+
+    # Check stock availability
+    if item["stock"] <= 0:
+        print("Sorry, this item is out of stock.")
+        return money
+
+    # Check if enough money was inserted
+    if money < item["price"]:
+        print("Insufficient funds. Money returned.")
+        return money
+
+    # Dispense item
+    item["stock"] -= 1
+    change = round(money - item["price"], 2)
+
+    print(f"\nDispensing: {item['name']}")
+    print(f"Change returned: £{change}")
+
+    suggest_item(code)
+    return change
+
+def vending_machine():
+    """Main vending machine loop"""
+    print("Welcome to the Python Vending Machine!")
+
+    while True:
+        display_menu()
+
+        # Get user selection
+        code = input("\nEnter item code (or 'q' to quit): ").upper()
+
+        if code == "Q":
+            print("Thank you for using the vending machine!")
+            break
+
+        if code not in items:
+            print("Invalid selection. Please try again.")
+            continue
+
+        # Get money input
+        try:
+            money = float(input("Insert money (£): "))
+        except ValueError:
+            print("Invalid money input.")
+            continue
+
+        process_purchase(code, money)
+
+        # Ask if user wants to buy another item
+        again = input("\nWould you like to buy another item? (y/n): ").lower()
+        if again != "y":
+            print("Thank you for your purchase!")
+            break
+
+# Run the vending machine
+vending_machine()
